@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8; 
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden text-gray-800">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-gray-900 text-white hidden md:flex flex-col shadow-xl">
+        <div class="h-16 flex items-center px-6 border-b border-gray-800">
+            <i class="fa-solid fa-layer-group text-blue-500 text-xl mr-3"></i>
+            <span class="text-lg font-bold tracking-wider uppercase">Nexus EMS</span>
+        </div>
+        <nav class="flex-1 px-4 py-6 space-y-2">
+            <a href="#" class="flex items-center px-4 py-3 bg-blue-600 text-white rounded-lg shadow-md transition-colors">
+                <i class="fa-solid fa-users w-6"></i>
+                <span class="font-medium">Employees</span>
+            </a>
+            <a href="#" class="flex items-center px-4 py-3 text-gray-400 hover:bg-gray-800 hover:text-white rounded-lg transition-colors">
+                <i class="fa-solid fa-chart-pie w-6"></i>
+                <span class="font-medium">Dashboard</span>
+            </a>
+            <a href="#" class="flex items-center px-4 py-3 text-gray-400 hover:bg-gray-800 hover:text-white rounded-lg transition-colors">
+                <i class="fa-solid fa-folder-open w-6"></i>
+                <span class="font-medium">Projects</span>
+            </a>
+        </nav>
+        <div class="p-4 border-t border-gray-800">
+            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors">
+                <i class="fa-solid fa-gear w-6"></i> Settings
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
+        <!-- Header -->
+        <header class="h-16 bg-white shadow-sm flex items-center justify-between px-6 lg:px-10 z-10">
+            <div class="flex items-center md:hidden">
+                <button class="text-gray-500 hover:text-gray-700 focus:outline-none">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
+            <div class="hidden sm:block">
+                <h1 class="text-xl font-semibold text-gray-800">Employee Management</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <i class="fa-solid fa-bell text-gray-400 hover:text-blue-500 cursor-pointer transition-colors text-lg"></i>
+                    <span class="absolute -top-1 -right-1 bg-red-500 rounded-full w-3 h-3 border-2 border-white"></span>
+                </div>
+                <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold cursor-pointer">
+                    A
+                </div>
+            </div>
+        </header>
+
+        <!-- Scrollable Content Area -->
+        <div class="flex-1 overflow-y-auto p-6 lg:p-10">
+            
+            <!-- Stats Row -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 flex items-center">
+                    <div class="p-3 rounded-lg bg-blue-50 text-blue-600 mr-4">
+                        <i class="fa-solid fa-user-tie text-2xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Total Employees</p>
+                        <p class="text-2xl font-bold text-gray-800" id="statTotalEmployees">0</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 flex items-center">
+                    <div class="p-3 rounded-lg bg-green-50 text-green-600 mr-4">
+                        <i class="fa-solid fa-briefcase text-2xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Active Roles</p>
+                        <p class="text-2xl font-bold text-gray-800" id="statRoles">0</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 flex items-center">
+                    <div class="p-3 rounded-lg bg-purple-50 text-purple-600 mr-4">
+                        <i class="fa-solid fa-diagram-project text-2xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Active Projects</p>
+                        <p class="text-2xl font-bold text-gray-800" id="statProjects">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Add Employee Form -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                            <h2 class="text-lg font-semibold text-gray-800"><i class="fa-solid fa-user-plus mr-2 text-blue-500"></i> Add New Employee</h2>
+                        </div>
+                        <div class="p-6">
+                            <form id="addEmployeeForm" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                    <input type="text" id="empName" required placeholder="e.g. Jane Doe" 
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Role / Position</label>
+                                    <input type="text" id="empRole" required placeholder="e.g. Software Engineer"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Assigned Project</label>
+                                    <input type="text" id="empProject" required placeholder="e.g. Project Apollo"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+                                </div>
+                                <button type="submit" class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors shadow-sm flex justify-center items-center">
+                                    <i class="fa-solid fa-plus mr-2"></i> Add Employee
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Employee List Table -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full">
+                        <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                            <h2 class="text-lg font-semibold text-gray-800"><i class="fa-solid fa-list mr-2 text-blue-500"></i> Employee Directory</h2>
+                            <!-- Dummy Search -->
+                            <div class="relative">
+                                <input type="text" placeholder="Search..." class="pl-9 pr-4 py-1.5 border border-gray-300 rounded-full text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                                <i class="fa-solid fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto flex-1">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider border-b border-gray-200">
+                                        <th class="px-6 py-4 font-medium">Name</th>
+                                        <th class="px-6 py-4 font-medium">Role</th>
+                                        <th class="px-6 py-4 font-medium">Project</th>
+                                        <th class="px-6 py-4 font-medium text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="employeeTableBody" class="divide-y divide-gray-100">
+                                    <!-- Rows populated by JS -->
+                                </tbody>
+                            </table>
+                            
+                            <!-- Empty State -->
+                            <div id="emptyState" class="hidden flex-col items-center justify-center py-12 text-gray-500">
+                                <i class="fa-solid fa-folder-open text-4xl mb-3 text-gray-300"></i>
+                                <p>No employees found. Add one to get started.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Custom Modals (Instead of window.alert/confirm) -->
+    
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center backdrop-blur-sm">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-sm p-6 m-4 fade-in">
+            <div class="flex items-center justify-center w-12 h-12 rounded-full bg-red-100 text-red-600 mb-4 mx-auto">
+                <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-center text-gray-900 mb-2">Delete Employee</h3>
+            <p class="text-center text-gray-500 text-sm mb-6">Are you sure you want to remove <strong id="deleteEmpName"></strong>? This action cannot be undone.</p>
+            <div class="flex space-x-3">
+                <button onclick="closeDeleteModal()" class="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg font-medium transition-colors">Cancel</button>
+                <button id="confirmDeleteBtn" class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Employee Modal -->
+    <div id="editModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center backdrop-blur-sm">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 m-4 fade-in">
+            <div class="flex justify-between items-center mb-5 border-b border-gray-100 pb-3">
+                <h3 class="text-lg font-semibold text-gray-900"><i class="fa-solid fa-pen-to-square text-blue-500 mr-2"></i> Edit Employee</h3>
+                <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form id="editEmployeeForm" class="space-y-4">
+                <input type="hidden" id="editEmpId">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                    <input type="text" id="editEmpName" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Role / Position</label>
+                    <input type="text" id="editEmpRole" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Assigned Project</label>
+                    <input type="text" id="editEmpProject" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div class="flex space-x-3 pt-4">
+                    <button type="button" onclick="closeEditModal()" class="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg font-medium transition-colors">Cancel</button>
+                    <button type="submit" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Application Script -->
+    <script>
+        // State management
+        let employees = JSON.parse(localStorage.getItem('ems_data')) || [
+            { id: 1, name: 'Sarah Connor', role: 'Security Analyst', project: 'Skynet Defense' },
+            { id: 2, name: 'John Smith', role: 'Frontend Developer', project: 'Dashboard UI' },
+            { id: 3, name: 'Emily Chen', role: 'Project Manager', project: 'Mobile App Migration' }
+        ];
+
+        let employeeToDelete = null;
+
+        // DOM Elements
+        const formAdd = document.getElementById('addEmployeeForm');
+        const formEdit = document.getElementById('editEmployeeForm');
+        const tableBody = document.getElementById('employeeTableBody');
+        const emptyState = document.getElementById('emptyState');
+        
+        const statTotal = document.getElementById('statTotalEmployees');
+        const statRoles = document.getElementById('statRoles');
+        const statProjects = document.getElementById('statProjects');
+
+        // Modal Elements
+        const deleteModal = document.getElementById('deleteModal');
+        const editModal = document.getElementById('editModal');
+
+        // Initialize application
+        function init() {
+            renderTable();
+            updateStats();
+        }
+
+        // Render the employee table
+        function renderTable() {
+            tableBody.innerHTML = '';
+            
+            if (employees.length === 0) {
+                emptyState.classList.remove('hidden');
+                emptyState.classList.add('flex');
+            } else {
+                emptyState.classList.add('hidden');
+                emptyState.classList.remove('flex');
+                
+                employees.forEach(emp => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-gray-50 transition-colors group';
+                    tr.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="h-8 w-8 rounded-full bg-gradient-to-tr from-blue-500 to-blue-300 flex items-center justify-center text-white font-bold text-sm mr-3">
+                                    ${emp.name.charAt(0)}
+                                </div>
+                                <div class="text-sm font-medium text-gray-900">${emp.name}</div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                ${emp.role}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            ${emp.project}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button onclick="openEditModal(${emp.id})" class="text-blue-500 hover:text-blue-700 p-2 rounded-lg hover:bg-blue-50 transition-colors mr-1 outline-none" title="Edit">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button onclick="openDeleteModal(${emp.id}, '${emp.name}')" class="text-red-500 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-colors outline-none" title="Delete">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            }
+        }
+
+        // Update top statistics
+        function updateStats() {
+            statTotal.innerText = employees.length;
+            
+            // Calculate unique roles and projects
+            const roles = new Set(employees.map(e => e.role));
+            const projects = new Set(employees.map(e => e.project));
+            
+            statRoles.innerText = roles.size;
+            statProjects.innerText = projects.size;
+        }
+
+        // Save to local storage
+        function saveToDataStore() {
+            localStorage.setItem('ems_data', JSON.stringify(employees));
+            updateStats();
+        }
+
+        // Add Employee Event
+        formAdd.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const newEmp = {
+                id: Date.now(), // simple unique id
+                name: document.getElementById('empName').value.trim(),
+                role: document.getElementById('empRole').value.trim(),
+                project: document.getElementById('empProject').value.trim()
+            };
+
+            employees.push(newEmp);
+            saveToDataStore();
+            renderTable();
+            
+            formAdd.reset();
+        });
+
+        // Edit Employee Event
+        formEdit.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const id = parseInt(document.getElementById('editEmpId').value);
+            const index = employees.findIndex(emp => emp.id === id);
+            
+            if (index !== -1) {
+                employees[index].name = document.getElementById('editEmpName').value.trim();
+                employees[index].role = document.getElementById('editEmpRole').value.trim();
+                employees[index].project = document.getElementById('editEmpProject').value.trim();
+                
+                saveToDataStore();
+                renderTable();
+                closeEditModal();
+            }
+        });
+
+        // Modal Controls (Edit)
+        function openEditModal(id) {
+            const emp = employees.find(e => e.id === id);
+            if (emp) {
+                document.getElementById('editEmpId').value = emp.id;
+                document.getElementById('editEmpName').value = emp.name;
+                document.getElementById('editEmpRole').value = emp.role;
+                document.getElementById('editEmpProject').value = emp.project;
+                
+                editModal.classList.remove('hidden');
+            }
+        }
+
+        function closeEditModal() {
+            editModal.classList.add('hidden');
+        }
+
+        // Modal Controls (Delete)
+        function openDeleteModal(id, name) {
+            employeeToDelete = id;
+            document.getElementById('deleteEmpName').innerText = name;
+            deleteModal.classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            employeeToDelete = null;
+            deleteModal.classList.add('hidden');
+        }
+
+        document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+            if (employeeToDelete !== null) {
+                employees = employees.filter(emp => emp.id !== employeeToDelete);
+                saveToDataStore();
+                renderTable();
+                closeDeleteModal();
+            }
+        });
+
+        // Close modals if clicking outside content
+        window.addEventListener('click', (e) => {
+            if (e.target === deleteModal) closeDeleteModal();
+            if (e.target === editModal) closeEditModal();
+        });
+
+        // Run on startup
+        init();
+    </script>
+</body>
+</html>
